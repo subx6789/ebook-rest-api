@@ -4,7 +4,7 @@
   "description": "This is a ebook project",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon server.ts"
   },
   "author": "Subhajit Sarkar <subhajits956@gmail.com>",
   "license": "ISC",
