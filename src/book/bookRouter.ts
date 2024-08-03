@@ -15,6 +15,9 @@ const upload = multer({
   limits: { fileSize: 1e7 },
 });
 //routes
+/**
+ * Create Book
+ */
 bookRouter.post(
   "/",
   authenticate,
@@ -24,7 +27,9 @@ bookRouter.post(
   ]),
   createBook
 );
-
+/**
+ * Update Book
+ */
 bookRouter.put(
   "/:bookId",
   authenticate,
@@ -34,11 +39,17 @@ bookRouter.put(
   ]),
   updateBook
 );
-
+/**
+ * List Books
+ */
 bookRouter.get("/", listBooks);
-
+/**
+ * Get Book
+ */
 bookRouter.get("/:bookId", getSingleBook);
-
+/**
+ * Delete Book
+ */
 bookRouter.delete("/:bookId", authenticate, deleteBook);
 
 export default bookRouter;
