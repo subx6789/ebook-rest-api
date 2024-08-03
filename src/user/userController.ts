@@ -9,8 +9,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const { name, email, password } = req.body;
   //Validation
   if (!name || !email || !password) {
-    const error = createHttpError(400, "All fields are required");
-    return next(error);
+    return next(createHttpError(400, "All fields are required"));
   }
 
   //Database call
@@ -41,11 +40,44 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     const token = sign({ sub: newUser._id }, config.jwtSecret as string, {
       expiresIn: "7d",
     });
-    res.json({
+    res.status(201).json({
       accessToken: token,
     });
   } catch (err) {
     return next(createHttpError(500, "Error while signing the access token"));
   }
 };
-export { createUser };
+const loginUser = async (req: Request, res: Response, next: NextFunction) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return next(createHttpError(400, "All fields are required"));
+  }
+  let user: User | null;
+  try {
+    user = await userModel.findOne({ email });
+    if (!user) {
+      return next(createHttpError(404, "User not found"));
+    }
+  } catch (err) {
+    return next(createHttpError(500, "Server error in finding the user"));
+  }
+  try {
+    const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    return next(createHttpError(400, "Password is incorrect"));
+  }
+  } catch (err) {
+    return next(createHttpError(500, "Error while logging in the user"));
+  }
+  try {
+    const token = sign({ sub: user._id }, config.jwtSecret as string, {
+      expiresIn: "7d",
+    });
+    res.status(201).json({
+      accessToken: token,
+    });
+  } catch (err) {
+    return next(createHttpError(500, "Error while signing the access token"));
+  }
+};
+export { createUser, loginUser };
